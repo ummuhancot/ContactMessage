@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.awt.image.RasterFormatException;
+import java.util.List;
 import java.util.logging.ErrorManager;
 
 @Component
@@ -17,13 +18,20 @@ public class MethodHelper {
     private final ContactMessageRepository contactMessageRepository;
 
 
-    public ContactMessage checkMessageExistById(Long id){
-        return contactMessageRepository.findById(id).orElseThrow(()->new ResourceNotFoundException(String.format(ErorMessages.NOT_FOUND_MESSAGE,id)));
-
+    public ContactMessage checkMessageExistById(
+            Long id) {
+        return contactMessageRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException(String.format(ErorMessages.NOT_FOUND_MESSAGE, id)));
     }
 
-
-
+    public List<ContactMessage> checkMessageExistBySubject(
+            String subject) {
+        List<ContactMessage> contactMessages = contactMessageRepository.findBySubjectContainsIgnoreCase(subject);
+        if (contactMessages.isEmpty()) {
+            throw new ResourceNotFoundException(String.format(ErorMessages.NOT_FOUND_MESSAGE_BY_SUBJECT, subject));
+        }
+        return contactMessages;
+    }
 
 
 
